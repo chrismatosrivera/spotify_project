@@ -12,6 +12,7 @@
    export let data = [];
   export let xAccessor = (/** @type {{ x: any; }} */ d) => d.x;
   export let yAccessor = (/** @type {{ y: any; }} */ d) => d.y;
+  export let rAccessor = (/** @type {{ r: any; }} */ d) => d.r;
   /**
 	 * @type {any}
 	 */
@@ -54,8 +55,11 @@
     .range([dms.boundedHeight, 0])
     .nice();
 
+  $: rScale = d3.scaleLinear()
+
   $: xAccessorScaled = (/** @type {{ x: any; }} */ d) => xScale(xAccessor(d));
   $: yAccessorScaled = (/** @type {{ y: any; }} */ d) => yScale(yAccessor(d));
+  $: rAccessorScaled = (/** @type {{ r: any; }} */ d) => rScale(rAccessor(d));
   $: keyAccessor = (d, i) => i
 </script>
 
@@ -76,6 +80,7 @@
       keyAccessor={keyAccessor}
       xAccessor={xAccessorScaled}
       yAccessor={yAccessorScaled}
+      rAccessor={rAccessorScaled}
     />
   </Chart>
 </div>

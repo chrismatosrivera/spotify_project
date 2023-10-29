@@ -63,11 +63,13 @@
     text-anchor: middle;
     font-size: 0.8em;
     letter-spacing: 0.01em;
+    color: white;
   }
 
   .Axis__tick {
     font-size: 0.9em;
     transition: all 0.3s ease-out;
+    color: white;
   }
 
   .Axis--dimension-x .Axis__tick {

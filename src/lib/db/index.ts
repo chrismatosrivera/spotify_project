@@ -27,7 +27,6 @@ export function getTrackForArtist(artistId: string): Track[] {
           t.preview_url,
           t.popularity,
           a.name as artist_name,
-          a.followers as artist_followers,
           af.acousticness,
           af.danceability,
           af.energy,
@@ -77,7 +76,7 @@ export function getTrackSample(): Track[] {
     inner join r_track_artist as ta on t.id = ta.track_id
     inner join artists as a on a.id = ta.artist_id
     inner join audio_features as af on t.audio_feature_id = af.id
-    where t.id in (select id from tracks ORDER BY RANDOM() LIMIT 10000);
+    where t.id in (select id from tracks where popularity > 10 ORDER BY RANDOM() LIMIT 1000) and a.popularity > 10;
   `;
 
   const stmnt = db.prepare(sql);

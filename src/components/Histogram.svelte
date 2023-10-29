@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import * as d3 from "d3";
 
   import Chart from "./Chart.svelte";
@@ -6,12 +6,13 @@
   import Axis from "./Axis.svelte";
   import Gradient from "./Gradient.svelte";
   import { getUniqueId } from "./utils";
+	import type { Track } from "$lib/db/types";
 
   const formatDate = d3.timeFormat("%-b %-d");
   const gradientColors = ["#9980FA", "rgb(226, 222, 243)"]
   const gradientId = getUniqueId("Histogram-gradient");
 
-  export let data = [];
+  export let data: Track[] = [];
   export let xAccessor = d => d.x;
   export let label;
 

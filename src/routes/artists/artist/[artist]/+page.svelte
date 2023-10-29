@@ -13,7 +13,10 @@
 
   const energyAccessor = d => d.energy;
   const danceabilityAccessor = d => d.danceability;
+  const popularityAccessor = d => d.popularity;
   const keyAccessor = d => d.key;
+  let majorTracks: Track[];
+  let minorTracks: Track[];
 
   let chosenTrack: string;
 
@@ -22,7 +25,10 @@
 			.then((res) => res.json())
 			.then((data) => {
 				tracks = data;
-				console.log(tracks)
+				majorTracks = tracks.filter(t => t.mode == 1);
+				minorTracks = tracks.filter(t => t.mode == 0);
+				console.log(majorTracks);
+				console.log(minorTracks)
 			})
 	}
 
@@ -34,20 +40,29 @@
 <div class="px-4">
 	<h1 class="is-size-1 mb-5">Tracks</h1>
 
-
 <ScatterPlot
 	data={tracks}
 	xAccessor={energyAccessor}
 	yAccessor={danceabilityAccessor}
+	rAccessor={popularityAccessor}
 	xLabel="Energy"
 	yLabel="Danceability"
 />
 
+
+<h1> Major </h1>
 <Histogram
-				data={tracks}
-				xAccessor={keyAccessor}
-				label="Key"
-			/>
+	data={majorTracks}
+	xAccessor={keyAccessor}
+	label="Key"
+/>
+
+<h1> Minor </h1>
+<Histogram
+	data={minorTracks}
+	xAccessor={keyAccessor}
+	label="Key"
+/>
 
 {#if tracks != undefined}
 	{#each tracks as track}

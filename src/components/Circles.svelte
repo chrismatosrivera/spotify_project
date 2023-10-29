@@ -5,6 +5,7 @@
   export let keyAccessor = () => {};
   export let xAccessor = () => {};
   export let yAccessor = () => {};
+  export let rAccessor = () => {};
   export let radius = 5;
   let pickedPreview;
 </script>
@@ -15,7 +16,7 @@
   <circle
     cx={xAccessor(d, i)}
     cy={yAccessor(d, i)}
-    r={typeof radius == 'function' ? radius(d) : radius} 
+    r={radius} 
     on:click={() => { pickedPreview = d.preview_url; }}/>
 {/each}
 
@@ -29,5 +30,6 @@
   circle {
     fill: #9980fa;
     transition: all 0.3s ease-out;
+    stroke: black;
   }
 </style>
