@@ -1,42 +1,54 @@
 <script lang="ts">
 	import { error } from '@sveltejs/kit';
-	import type { Track } from '../../lib/db/types';
+	import type { AudioFeature, Track } from '../../lib/db/types';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import ScatterPlot from '../../components/ScatterPlot.svelte';
 	import * as d3 from "d3";
+	import Barchart from '../../components/Barchart.svelte';
 
 	let tracks: Track[];
-	let vis: HTMLDivElement;
+	let allTracks: Track[];
 
-	const energyAccessor = d => d.energy;
-	const danceabilityAccessor = d => d.danceability;
-	const loudnessAccessor = d => d.loudness;
-
-	let chosenTrack: string;
-	let xScale = d3.scaleLinear().domain([0, 10]);
-	let yScale = d3.scaleLinear().domain([0, 10]);
-	let width: number;
-	let height: number;
-	const margin = {
-		top: 20,
-		right: 20,
-		bottom: 30,
-		left: 30
-	};
+	let chosenTempo: number = 100;
 
 	function fetchTrackSample() {
 		fetch(`/tracks`)
 			.then((res) => res.json())
 			.then((data) => {
-				tracks = data;
-                console.log(tracks);
+				allTracks = data;
+				tracks = allTracks;
+				
+                attributes = [
+					{name: 'energy', value: tracks[0].energy},
+					{name: 'danceability', value: tracks[0].danceability},
+					{name: 'instrumentalness', value: tracks[0].instrumentalness},
+					{name: 'valence', value: tracks[0].valence},
+					{name: 'liveness', value: tracks[0].loudness},
+					{name: 'speechiness', value: tracks[0].speechiness},
+				];
+				
 			})
+	}
+
+	function onTempoChange() {
+		tracks = allTracks.filter(t => Math.floor(t.tempo) == Math.floor(chosenTempo));
+		attributes = [
+			{name: 'energy', value: tracks[0].energy},
+			{name: 'danceability', value: tracks[0].danceability},
+			{name: 'instrumentalness', value: tracks[0].instrumentalness},
+			{name: 'valence', value: tracks[0].valence},
+			{name: 'liveness', value: tracks[0].liveness},
+			{name: 'speechiness', value: tracks[0].speechiness},
+		];
 	}
 
 	onMount(async () => {
 		fetchTrackSample();
 	});
+
+
+	let attributes: AudioFeature[];
 
 /* 	function redraw(): void {
 		// empty vis div
@@ -81,14 +93,28 @@
 			.style('fill-opacity', '0.5')
 			.style('stroke', '#ff3e00');
 	} */
+
+	const xTicks = ['energy', 'danceability', 'instrumentalness', 'valence', 'liveness', 'speechiness'];
+	const yTicks = [0, 25, 50, 75, 100];
+
 </script>
 
-<div id="scatter" bind:this={vis}></div>
 
-<ScatterPlot
+<!-- <ScatterPlot
 	data={tracks}
 	xAccessor={energyAccessor}
 	yAccessor={loudnessAccessor}
 	xLabel="Energy"
 	yLabel="Loudness"
-/>
+/> -->
+
+{#if (attributes && attributes.length > 0)}
+	<Barchart data={attributes} yTicks={yTicks} />
+{/if}
+
+
+
+<div class="m-5">
+	<input type="range" min="60" max="180" class="range" bind:value={chosenTempo} on:change={onTempoChange} /> 
+	<p>{chosenTempo}</p>
+</div>

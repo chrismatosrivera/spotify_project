@@ -25,3 +25,8 @@ export type Artist = {
     name: string;
     popularity: number;
 }
+
+export type AudioFeature = {
+    name: string,
+    value: number
+}
