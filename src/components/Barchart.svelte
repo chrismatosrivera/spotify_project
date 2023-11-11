@@ -19,7 +19,7 @@
 	}
 
     $: xTicks = data.map(d => d.name);
-    export let yTicks: number[];
+    export let yTicks: any[];
 
     const padding = { top: 20, right: 15, bottom: 20, left: 25 };
     

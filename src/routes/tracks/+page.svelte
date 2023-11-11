@@ -6,13 +6,17 @@
 	import ScatterPlot from '../../components/ScatterPlot.svelte';
 	import * as d3 from "d3";
 	import Barchart from '../../components/Barchart.svelte';
+	import { Wave } from 'svelte-loading-spinners';
 
 	let tracks: Track[];
 	let allTracks: Track[];
+	let isLoading: boolean = false; 
 
 	let chosenTempo: number = 100;
+	let tempoName: string = "Tempo"
 
 	function fetchTrackSample() {
+		isLoading = true;
 		fetch(`/tracks`)
 			.then((res) => res.json())
 			.then((data) => {
@@ -22,25 +26,40 @@
                 attributes = [
 					{name: 'energy', value: tracks[0].energy},
 					{name: 'danceability', value: tracks[0].danceability},
-					{name: 'instrumentalness', value: tracks[0].instrumentalness},
 					{name: 'valence', value: tracks[0].valence},
-					{name: 'liveness', value: tracks[0].loudness},
-					{name: 'speechiness', value: tracks[0].speechiness},
 				];
-				
+				isLoading = false;
 			})
 	}
 
 	function onTempoChange() {
-		tracks = allTracks.filter(t => Math.floor(t.tempo) == Math.floor(chosenTempo));
+		tracks = allTracks.filter(t => Math.floor(t.tempo) > Math.floor(chosenTempo) && Math.floor(t.tempo) < Math.floor(chosenTempo + 20))
 		attributes = [
 			{name: 'energy', value: tracks[0].energy},
 			{name: 'danceability', value: tracks[0].danceability},
-			{name: 'instrumentalness', value: tracks[0].instrumentalness},
 			{name: 'valence', value: tracks[0].valence},
-			{name: 'liveness', value: tracks[0].liveness},
-			{name: 'speechiness', value: tracks[0].speechiness},
 		];
+		
+		if (chosenTempo > 199){
+		 tempoName = "Prestissimo (200+bpm)";
+		} else if (chosenTempo > 179){
+		 tempoName = "Presto (180-200bpm)";
+		} else if (chosenTempo > 159){
+		 tempoName = "Vivace (160 - 180bpm)";
+		} else if (chosenTempo > 139) {
+		 tempoName = "Allegro - upper (140-160bpm)";
+		} else if (chosenTempo > 119) {
+		 tempoName = "Allegro (120 - 140bpm)";
+		} else if (chosenTempo > 99) {
+		 tempoName = "Allegretto (100-120bpm)";
+		} else if (chosenTempo > 79) {
+		 tempoName = "Andantino (80 - 100bpm)";
+		} else if (chosenTempo > 59) {
+		 tempoName = "Adagio (60 - 80bpm)";
+		} else {
+		 tempoName = "Largo (40 - 60bpm)";
+		}
+		
 	}
 
 	onMount(async () => {
@@ -50,51 +69,7 @@
 
 	let attributes: AudioFeature[];
 
-/* 	function redraw(): void {
-		// empty vis div
-		d3.select(vis).html(null); 
-
-		// determine width & height of parent element and subtract the margin
-		width = d3.select(vis).node().getBoundingClientRect().width - margin.left - margin.right;
-		height = d3.select(vis).node().getBoundingClientRect().height - margin.top - margin.bottom;
-
-		// init scales according to new width & height
-		xScale.range([0, width]);
-		yScale.range([height, 0]);
-
-		// create svg and create a group inside that is moved by means of margin
-		const svg = d3.select(vis)
-			.append('svg')
-			.attr('width', width + margin.left + margin.right)
-			.attr('height', height + margin.top + margin.bottom)
-			.append('g')
-			.attr('transform', `translate(${[margin.left, margin.top]})`)
-
-		// draw x and y axes
-		svg.append("g")
-			.attr("transform", `translate(${[0, height]})`)
-			.call(d3.axisBottom(xScale));
-		svg.append("g")
-    		.call(d3.axisLeft(yScale));
-
-		// draw data points
-		svg.append('g').selectAll('circle')
-			.data(tracks)
-			.enter()
-			.append('circle')
-			.attr('danceability', function (d: { danceability: any; }) { 
-				return xScale(d.danceability); 
-			})
-			.attr('loudness', function (d: { loudness: any; }) { 
-				return yScale(d.loudness); 
-			})
-			.attr('r', (d: Track) => d.popularity)
-			.style('fill', '#ff3e00')
-			.style('fill-opacity', '0.5')
-			.style('stroke', '#ff3e00');
-	} */
-
-	const xTicks = ['energy', 'danceability', 'instrumentalness', 'valence', 'liveness', 'speechiness'];
+	const xTicks = ['energy', 'danceability','valence'];
 	const yTicks = [0, 25, 50, 75, 100];
 
 </script>
@@ -108,13 +83,32 @@
 	yLabel="Loudness"
 /> -->
 
+
+<style>
+    .loadingAnim {
+        width: 50%;
+		text-align: center;
+    }
+	
+</style>
+
+
+<!-- i want to make it centered and take up about half the size of the page? i couldnt figure it out lol -->
+{#if isLoading}
+	<div class="h-screen flex items-center justify-center">
+		<Wave size="60" color="#9980fa" unit="px" duration="1s" />
+	</div>
+{:else}
+	<div class="m-5">
+	<input type="range" min="40" max="200" class="range" step="20" bind:value={chosenTempo} on:change={onTempoChange} /> 
+	{tempoName}
+	</div>
+{/if}
+
+
 {#if (attributes && attributes.length > 0)}
 	<Barchart data={attributes} yTicks={yTicks} />
 {/if}
 
 
 
-<div class="m-5">
-	<input type="range" min="60" max="180" class="range" bind:value={chosenTempo} on:change={onTempoChange} /> 
-	<p>{chosenTempo}</p>
-</div>

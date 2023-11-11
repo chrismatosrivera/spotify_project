@@ -18,6 +18,7 @@ export type Track = {
     tempo: number;
     speechiness: number;
     time_signature: number;
+    key_string: string;
 };
 
 export type Artist = {

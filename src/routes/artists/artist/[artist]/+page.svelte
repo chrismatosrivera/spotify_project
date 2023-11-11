@@ -6,6 +6,7 @@
 	import { page } from '$app/stores';
 	import ScatterPlot from '../../../../components/ScatterPlot.svelte';
 	import Histogram from '../../../../components/Histogram.svelte';
+	import { Wave } from 'svelte-loading-spinners';
 
 	let tracks: Track[];
 
@@ -17,52 +18,63 @@
   const keyAccessor = d => d.key;
   let majorTracks: Track[];
   let minorTracks: Track[];
+  let isLoading: boolean = false; 
 
   let chosenTrack: string;
 
 	function fetchTracks() {
+		isLoading = true;
 		fetch(`/artists/artist?artistId=${artistId}`)
 			.then((res) => res.json())
 			.then((data) => {
 				tracks = data;
 				majorTracks = tracks.filter(t => t.mode == 1);
 				minorTracks = tracks.filter(t => t.mode == 0);
-				console.log(majorTracks);
-				console.log(minorTracks)
+				isLoading = false;
 			})
+			
 	}
 
 	onMount(async () => {
 		fetchTracks();
 	});
+	
+	
+	function showTip(){
+	
+	
+	
+	}
 </script>
 
 <div class="px-4">
 	<h1 class="is-size-1 mb-5">Tracks</h1>
 
-<ScatterPlot
-	data={tracks}
-	xAccessor={energyAccessor}
-	yAccessor={danceabilityAccessor}
-	rAccessor={popularityAccessor}
-	xLabel="Energy"
-	yLabel="Danceability"
-/>
+{#if isLoading}
+	<div class="h-screen flex items-center justify-center">
+		<Wave size="60" color="#9980fa" unit="px" duration="1s" />
+	</div>
+{:else}
 
+	<h1> Major </h1>
+	<div class="majorHist">
+		<Histogram
+			data={majorTracks}
+			xAccessor={keyAccessor}
+			label="Key"
+		/>
+	</div>
 
-<h1> Major </h1>
-<Histogram
-	data={majorTracks}
-	xAccessor={keyAccessor}
-	label="Key"
-/>
+	<h1> Minor </h1>
+	<div class="minorHist">
+		<Histogram
+			data={minorTracks}
+			xAccessor={keyAccessor}
+			label="Key"
+		/>
+	</div>
+{/if}
 
-<h1> Minor </h1>
-<Histogram
-	data={minorTracks}
-	xAccessor={keyAccessor}
-	label="Key"
-/>
 
 {#if tracks != undefined}
 	{#each tracks as track}
