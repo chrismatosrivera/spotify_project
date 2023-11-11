@@ -1,24 +1,24 @@
 <script lang="ts">
 	import { error } from '@sveltejs/kit';
-	import type { Artist, Track } from '../../../../lib/db/types';
+	import type { Artist, AudioFeature, Track } from '../../../../lib/db/types';
 	import { onMount } from 'svelte';
 	import { paginate, LightPaginationNav } from 'svelte-paginate'
 	import { page } from '$app/stores';
 	import ScatterPlot from '../../../../components/ScatterPlot.svelte';
-	import Histogram from '../../../../components/Histogram.svelte';
 	import { Wave } from 'svelte-loading-spinners';
+	import Barchart from '../../../../components/Barchart.svelte';
 
 	let tracks: Track[];
 
   const artistId = $page.params.artist;
 
-  const energyAccessor = d => d.energy;
-  const danceabilityAccessor = d => d.danceability;
-  const popularityAccessor = d => d.popularity;
-  const keyAccessor = d => d.key;
   let majorTracks: Track[];
   let minorTracks: Track[];
   let isLoading: boolean = false; 
+
+  let majorKeyDistribution: AudioFeature[];
+  let minorKeyDistribution: AudioFeature[];
+  const yTicks = [0, 10, 25];
 
   let chosenTrack: string;
 
@@ -32,19 +32,19 @@
 				minorTracks = tracks.filter(t => t.mode == 0);
 				isLoading = false;
 			})
+
+		fetch(`/artists/keyDistribution?artistId=${artistId}`)
+			.then((res) => res.json())
+			.then((data) => {
+				majorKeyDistribution = data.filter((t: AudioFeature) => t.mode == 1);
+				minorKeyDistribution = data.filter((t: AudioFeature) => t.mode == 0);
+			})
 			
 	}
 
 	onMount(async () => {
 		fetchTracks();
 	});
-	
-	
-	function showTip(){
-	
-	
-	
-	}
 </script>
 
 <div class="px-4">
@@ -58,20 +58,16 @@
 
 	<h1> Major </h1>
 	<div class="majorHist">
-		<Histogram
-			data={majorTracks}
-			xAccessor={keyAccessor}
-			label="Key"
-		/>
+		{#if majorKeyDistribution && majorKeyDistribution.length > 0}
+			<Barchart data={majorKeyDistribution} yTicks={yTicks} />
+		{/if}
 	</div>
 
 	<h1> Minor </h1>
 	<div class="minorHist">
-		<Histogram
-			data={minorTracks}
-			xAccessor={keyAccessor}
-			label="Key"
-		/>
+		{#if minorKeyDistribution && minorKeyDistribution.length > 0}
+			<Barchart data={minorKeyDistribution} yTicks={yTicks} />
+		{/if}
 	</div>
 {/if}
 
@@ -80,7 +76,7 @@
 	{#each tracks as track}
 		<p on:click={() => {chosenTrack = track.name}}> {track.name} {track.popularity} </p>
     {#if (chosenTrack == track.name)}
-    <audio controls="controls">
+    <audio>
       <source src={track.preview_url} type="audio/mpeg"/>
     </audio>
     {/if}

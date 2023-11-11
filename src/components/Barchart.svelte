@@ -5,21 +5,17 @@
 
     export let data: AudioFeature[];
 
+	export let toolTipContent: string | null = null;
+
     let width: number;
 	let height: number;
-	const margin = {
-		top: 20,
-		right: 20,
-		bottom: 30,
-		left: 30
-	};
 
     function formatMobile(tick: any) {
 		return "'" + tick.toString().slice(-2);
 	}
 
     $: xTicks = data.map(d => d.name);
-    export let yTicks: any[];
+    export let yTicks: number[];
 
     const padding = { top: 20, right: 15, bottom: 20, left: 25 };
     

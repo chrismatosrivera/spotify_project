@@ -1,5 +1,5 @@
 import Database from 'better-sqlite3';
-import type { Track, Artist } from './types';
+import type { Track, Artist, AudioFeature } from './types';
 
 const db = new Database('./data/spotify.sqlite', { verbose: console.log });
 
@@ -49,6 +49,25 @@ export function getTrackForArtist(artistId: string): Track[] {
   const stmnt = db.prepare(sql);
   const rows = stmnt.all({ artistId });
   return rows as Track[];
+}
+
+export function getKeyDistributionForArtist(artistId: string) {
+  const sql = `
+    select af.key as name,
+      count(key) as value,
+      mode as mode,
+      count(mode) as modecount
+    from tracks as t
+    inner join r_track_artist as ta on t.id = ta.track_id
+    inner join artists as a on a.id = ta.artist_id
+    inner join audio_features as af on t.audio_feature_id = af.id
+    where a.id = '2JFljHPanIjYy2QqfNYvC0'
+    group by [key], mode;
+  `;
+
+  const stmnt = db.prepare(sql);
+  const rows = stmnt.all({ artistId });
+  return rows as AudioFeature[];
 }
 
 export function getTrackSample(): Track[] {

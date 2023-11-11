@@ -69,20 +69,9 @@
 
 	let attributes: AudioFeature[];
 
-	const xTicks = ['energy', 'danceability','valence'];
 	const yTicks = [0, 25, 50, 75, 100];
 
 </script>
-
-
-<!-- <ScatterPlot
-	data={tracks}
-	xAccessor={energyAccessor}
-	yAccessor={loudnessAccessor}
-	xLabel="Energy"
-	yLabel="Loudness"
-/> -->
-
 
 <style>
     .loadingAnim {

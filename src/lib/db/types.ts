@@ -29,5 +29,7 @@ export type Artist = {
 
 export type AudioFeature = {
     name: string,
-    value: number
+    value: number,
+    mode?: number,
+    mode_count?: number,
 }
