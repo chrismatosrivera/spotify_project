@@ -51,6 +51,21 @@ export function getTrackForArtist(artistId: string): Track[] {
   return rows as Track[];
 }
 
+export function getArtistData(artistId: string) {
+  const sql = `
+  select id,
+      name,
+      genre_id
+  from artists
+  inner join r_artist_genre on id = artist_id
+  where id = $artistId
+  `;
+
+  const stmnt = db.prepare(sql);
+  const rows = stmnt.all({ artistId });
+  return rows as Artist[];
+}
+
 export function getKeyDistributionForArtist(artistId: string) {
   const sql = `
     select af.key as name,
@@ -61,12 +76,40 @@ export function getKeyDistributionForArtist(artistId: string) {
     inner join r_track_artist as ta on t.id = ta.track_id
     inner join artists as a on a.id = ta.artist_id
     inner join audio_features as af on t.audio_feature_id = af.id
-    where a.id = '2JFljHPanIjYy2QqfNYvC0'
+    where a.id = $artistId
     group by [key], mode;
   `;
 
   const stmnt = db.prepare(sql);
   const rows = stmnt.all({ artistId });
+  return rows as AudioFeature[];
+}
+
+export function getAverageKeyDistributionForGenre(genreId: string) {
+  const sql = `
+    WITH TrackCounts AS (
+    select af.key AS name,
+        COUNT(t.id) AS track_count,
+        af.mode AS mode,
+        a.name AS artist_name
+    from tracks AS t
+    inner join r_track_artist AS ta ON t.id = ta.track_id
+    inner join artists AS a ON a.id = ta.artist_id
+    inner join audio_features AS af ON t.audio_feature_id = af.id
+    inner join r_artist_genre AS rag ON a.id = rag.artist_id
+    where rag.genre_id = $genreId
+    group by af.key, af.mode, a.name
+    )
+
+    select name,
+        AVG(track_count) AS value,
+        mode
+    from TrackCounts
+    group by name, mode;
+  `;
+
+  const stmnt = db.prepare(sql);
+  const rows = stmnt.all({ genreId });
   return rows as AudioFeature[];
 }
 

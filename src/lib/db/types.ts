@@ -24,7 +24,9 @@ export type Track = {
 export type Artist = {
     id: string;
     name: string;
-    popularity: number;
+    genre_id: string;
+    tracks: Track[];
+    keyDistribution: AudioFeature[];
 }
 
 export type AudioFeature = {
