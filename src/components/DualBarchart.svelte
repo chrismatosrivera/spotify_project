@@ -4,7 +4,7 @@
 	import type { Attribute } from "svelte/types/compiler/interfaces";
 
     export let data: AudioFeature[];
-	export let data2: AudioFeature[];
+	export let data2: AudioFeature[] | null = null;
 
     let width: number;
 	let height: number;
@@ -64,16 +64,18 @@
 			{/each}
 		</g>
 		
-		<g class="bars2">
-			{#each data2 as point, i}
-				<rect
-					x={xScale(i) + 260/xTicks.length}
-					y={yScale(point.value)}
-					width={barWidth / xTicks.length * 3}
-					height={yScale(0) - yScale(point.value)}
-				/>
-			{/each}
-		</g>
+		{#if data2 != null}
+			<g class="bars2">
+				{#each data2 as point, i}
+					<rect
+						x={xScale(i) + 260/xTicks.length}
+						y={yScale(point.value)}
+						width={barWidth / xTicks.length * 3}
+						height={yScale(0) - yScale(point.value)}
+					/>
+				{/each}
+			</g>
+		{/if}
 	</svg>
 </div>
 
