@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.pagination-nav {
+    background: transparent !important;
+}
+
+.dark-pagination-nav .option.active {
+    color: hsl(var(--pc) / var(--tw-text-opacity)) !important;
+}

@@ -7,6 +7,7 @@
 	import ScatterPlot from '../../../../components/ScatterPlot.svelte';
 	import { Wave } from 'svelte-loading-spinners';
 	import DualBarchart from '../../../../components/DualBarchart.svelte';
+	import Violin from '../../../../components/Violin.svelte';
 
 	let artist: Artist;
 	let tracks: Track[];
@@ -20,7 +21,7 @@
   
   let majorKeyDistributionGenre: AudioFeature[];
   let minorKeyDistributionGenre: AudioFeature[];
-  const yTicks = [0, 25];
+  const yTicks = [0, 25, 50];
 
   let chosenTrack: string;
 
@@ -40,14 +41,14 @@
 	}
 
 	function fetchGenreDistribution() {
-		fetch(`/genres/genre?genreId=${artist.genre_id}`)
-			.then((res) => res.json())
-			.then((data) => {
-				let distribution = data;
-				majorKeyDistributionGenre = distribution.filter((t: AudioFeature) => t.mode == 1);
-				minorKeyDistributionGenre = distribution.filter((t: AudioFeature) => t.mode == 0);
+		//fetch(`/genres/genre?genreId=${artist.genre_id}`)
+			//.then((res) => res.json())
+			//.then((data) => {
+				//let distribution = data;
+				//majorKeyDistributionGenre = distribution.filter((t: AudioFeature) => t.mode == 1);
+				//minorKeyDistributionGenre = distribution.filter((t: AudioFeature) => t.mode == 0);
 				isLoading = false;
-			});
+			//});
 	}
 
 	onMount(async () => {
@@ -66,28 +67,21 @@
 
 	<h1> Major </h1>
 	<div class="majorHist">
-		{#if majorKeyDistribution && majorKeyDistribution.length > 0 && majorKeyDistributionGenre && majorKeyDistributionGenre.length > 0}
-			<DualBarchart data={majorKeyDistribution} data2={majorKeyDistributionGenre} yTicks={yTicks} />
+		{#if majorKeyDistribution && majorKeyDistribution.length > 0 }
+			<DualBarchart data={majorKeyDistribution}  yTicks={yTicks} />
 		{/if}
 	</div>
 
 	<h1> Minor </h1>
 	<div class="minorHist">
-		{#if minorKeyDistribution && minorKeyDistribution.length > 0 && minorKeyDistributionGenre && minorKeyDistributionGenre.length > 0}
-			<DualBarchart data={minorKeyDistribution} data2={minorKeyDistributionGenre} yTicks={yTicks} />
+		{#if minorKeyDistribution && minorKeyDistribution.length > 0 }
+			<DualBarchart data={minorKeyDistribution}  yTicks={yTicks} />
 		{/if}
 	</div>
 {/if}
 
 
 {#if tracks != undefined}
-	{#each tracks as track}
-		<p on:click={() => {chosenTrack = track.name}}> {track.name} {track.popularity} </p>
-    {#if (chosenTrack == track.name)}
-    <audio>
-      <source src={track.preview_url} type="audio/mpeg"/>
-    </audio>
-    {/if}
-	{/each}
-	{/if}
+	<Violin data={tracks.map(t => t.energy * 100)} />
+{/if}
 </div>

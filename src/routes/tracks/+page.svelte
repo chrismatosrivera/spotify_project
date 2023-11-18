@@ -3,41 +3,56 @@
 	import type { AudioFeature, Track } from '../../lib/db/types';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import ScatterPlot from '../../components/ScatterPlot.svelte';
+	import ScatterPlotV2 from '../../components/ScatterPlotV2.svelte';
 	import * as d3 from "d3";
 	import Barchart from '../../components/Barchart.svelte';
 	import { Wave } from 'svelte-loading-spinners';
 
-	let tracks: Track[];
+	let trackAverages: Track[];
+	let allTrackAverages: Track[];
 	let allTracks: Track[];
+
 	let isLoading: boolean = false; 
 
 	let chosenTempo: number = 100;
 	let tempoName: string = "Tempo"
 
-	function fetchTrackSample() {
+	let points: {x: number, y: number}[];
+
+	function fetchtrackAveragesample() {
 		isLoading = true;
+		fetch(`/tracks/trackAverage`)
+			.then((res) => res.json())
+			.then((data) => {
+				allTrackAverages = data;
+				trackAverages = allTrackAverages;
+				
+                attributes = [
+					{name: 'energy', value: trackAverages[0].energy},
+					{name: 'danceability', value: trackAverages[0].danceability},
+					{name: 'valence', value: trackAverages[0].valence},
+				];
+				isLoading = false;
+			})
+
 		fetch(`/tracks`)
 			.then((res) => res.json())
 			.then((data) => {
-				allTracks = data;
-				tracks = allTracks;
+				allTracks = data;	
 				
-                attributes = [
-					{name: 'energy', value: tracks[0].energy},
-					{name: 'danceability', value: tracks[0].danceability},
-					{name: 'valence', value: tracks[0].valence},
-				];
-				isLoading = false;
+				points = allTracks.map(t => {
+					return { x: t.danceability * 100, y: t.energy * 100}
+				});
+
 			})
 	}
 
 	function onTempoChange() {
-		tracks = allTracks.filter(t => Math.floor(t.tempo) > Math.floor(chosenTempo) && Math.floor(t.tempo) < Math.floor(chosenTempo + 20))
+		trackAverages = allTrackAverages.filter(t => Math.floor(t.tempo) > Math.floor(chosenTempo) && Math.floor(t.tempo) < Math.floor(chosenTempo + 20))
 		attributes = [
-			{name: 'energy', value: tracks[0].energy},
-			{name: 'danceability', value: tracks[0].danceability},
-			{name: 'valence', value: tracks[0].valence},
+			{name: 'energy', value: trackAverages[0].energy},
+			{name: 'danceability', value: trackAverages[0].danceability},
+			{name: 'valence', value: trackAverages[0].valence},
 		];
 		
 		if (chosenTempo > 199){
@@ -59,11 +74,10 @@
 		} else {
 		 tempoName = "Largo (40 - 60bpm)";
 		}
-		
 	}
 
 	onMount(async () => {
-		fetchTrackSample();
+		fetchtrackAveragesample();
 	});
 
 
@@ -88,9 +102,9 @@
 		<Wave size="60" color="#9980fa" unit="px" duration="1s" />
 	</div>
 {:else}
-	<div class="m-5">
-	<input type="range" min="40" max="200" class="range" step="20" bind:value={chosenTempo} on:change={onTempoChange} /> 
-	{tempoName}
+	<div class="mx-48">
+		<input type="range" min="40" max="200" class="range" step="20" bind:value={chosenTempo} on:change={onTempoChange} /> 
+		{tempoName}
 	</div>
 {/if}
 
@@ -98,6 +112,89 @@
 {#if (attributes && attributes.length > 0)}
 	<Barchart data={attributes} yTicks={yTicks} />
 {/if}
+
+{#if (points && points.length > 0)}
+	<div class="py-10">
+		<div class="grid grid-cols-7">
+			<div class="col-span-1">
+				
+			</div>
+			<div class="col-span-2 text-center">
+				danceability
+			</div>
+			<div class="col-span-2 text-center">
+				energy
+			</div>
+			<div class="col-span-2 text-center">
+				loudness
+			</div>
+		</div>
+		<div class="grid grid-cols-7 h-96">
+			<div class="col-span-1 text-center pt-[50%]">
+				danceability
+			</div>
+			<div class="col-span-2">
+				<ScatterPlotV2 points={allTracks.map(t => {
+					return { x: t.danceability * 100, y: t.danceability * 100}
+				})} />
+			</div>
+			<div class="col-span-2">
+				<ScatterPlotV2 points={allTracks.map(t => {
+					return { x: t.energy * 100, y: t.danceability * 100}
+				})} />
+			</div>
+			<div class="col-span-2">
+				<ScatterPlotV2 points={allTracks.map(t => {
+					return { x: 100 - t.loudness * -1, y: t.danceability * 100}
+				})} />
+			</div>
+		</div>
+
+		<div class="grid grid-cols-7 h-96">
+			<div class="col-span-1 text-center pt-[50%]">
+				energy
+			</div>
+			<div class="col-span-2">
+				<ScatterPlotV2 points={allTracks.map(t => {
+					return { x: t.danceability * 100, y: t.energy * 100}
+				})} />
+			</div>
+			<div class="col-span-2">
+				<ScatterPlotV2 points={allTracks.map(t => {
+					return { x: t.energy * 100, y: t.energy * 100}
+				})} />
+			</div>
+			<div class="col-span-2">
+				<ScatterPlotV2 points={allTracks.map(t => {
+					return { x: 100 - t.loudness * -1, y: t.energy * 100}
+				})} />
+			</div>
+		</div>
+
+		<div class="grid grid-cols-7 h-96">
+			<div class="col-span-1 text-center pt-[50%]">
+				loudness
+			</div>
+			<div class="col-span-2">
+				<ScatterPlotV2 points={allTracks.map(t => {
+					return { x: t.danceability * 100, y: 100 - t.loudness * -1}
+				})} />
+			</div>
+			<div class="col-span-2">
+				<ScatterPlotV2 points={allTracks.map(t => {
+					return { x: t.energy * 100, y: 100 - t.loudness * -1}
+				})} />
+			</div>
+			<div class="col-span-2">
+				<ScatterPlotV2 points={allTracks.map(t => {
+					return { x: 100 - t.loudness * -1, y: 100 - t.loudness * -1}
+				})} />
+			</div>
+		</div>
+	</div>
+{/if}
+
+
 
 
 

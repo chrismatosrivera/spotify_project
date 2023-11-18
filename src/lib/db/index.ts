@@ -113,7 +113,7 @@ export function getAverageKeyDistributionForGenre(genreId: string) {
   return rows as AudioFeature[];
 }
 
-export function getTrackSample(): Track[] {
+export function getTrackAverageSample(): Track[] {
   const sql = `
     select
           avg(af.acousticness) * 100 as acousticness,
@@ -133,6 +133,35 @@ export function getTrackSample(): Track[] {
     inner join albums as al on al.id = at.album_id
     where t.id in (select id from tracks where popularity > 10 ORDER BY RANDOM() LIMIT 1000) and a.popularity > 10
     group by af.tempo;
+  `;
+
+  const stmnt = db.prepare(sql);
+  const rows = stmnt.all();
+  return rows as Track[];
+}
+
+export function getTrackSample(): Track[] {
+  const sql = `
+    select
+          t.name,
+          t.popularity,
+          af.loudness as loudness,
+          af.acousticness as acousticness,
+          af.danceability as danceability,
+          af.energy as energy,
+          af.instrumentalness as instrumentalness,
+          af.liveness as liveness,
+          af.valence as valence,
+          af.loudness as loudness,
+          af.speechiness as speechiness,
+          af.tempo
+    from tracks as t
+    inner join r_track_artist as ta on t.id = ta.track_id
+    inner join artists as a on a.id = ta.artist_id
+    inner join audio_features as af on t.audio_feature_id = af.id
+    inner join r_albums_tracks as at on at.track_id = t.id
+    inner join albums as al on al.id = at.album_id
+    where t.id and a.popularity > 10 LIMIT 100;
   `;
 
   const stmnt = db.prepare(sql);

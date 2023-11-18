@@ -1,12 +1,11 @@
 import { getTrackSample } from '../../lib/db/index';
-import type { Artist } from '../../lib/db/types';
+import type { Track } from '../../lib/db/types';
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from '../$types';
 
-export const GET = (({ url }) => {
-    let tracks: Tracks[] = [];
+export const GET = (({ url }: any) => {
+    let tracks: Track[] = [];
 
     tracks = getTrackSample();
 
     return json(tracks);
-}) satisfies RequestHandler;
+}) 
