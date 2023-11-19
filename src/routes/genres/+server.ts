@@ -1,12 +1,12 @@
-import { getArtistList } from '../../lib/db/index';
+import { getArtistList, getGenreList } from '../../lib/db/index';
 import type { Artist } from '../../lib/db/types';
 import { json } from '@sveltejs/kit';
 
 export const GET = (({ url }: any) => {
     const searchTerm = url.searchParams.get('searchTerm')?.toString();
-    let artists: Artist[] = [];
+    let genres: { id: string }[] = [];
 
-    artists = getArtistList(searchTerm ?? "");
+    genres = getGenreList(searchTerm ?? "");
 
-    return json(artists);
+    return json(genres);
 }) 

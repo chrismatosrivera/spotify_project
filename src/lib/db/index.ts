@@ -19,6 +19,20 @@ export function getArtistList(searchQuery : string): Artist[] {
     return rows as Artist[];
 }
 
+export function getGenreList(searchQuery: string): { id: string }[] {
+  searchQuery = searchQuery + '%';
+
+  const sql = `
+    select *
+    from genres
+    where id like $searchQuery
+  `;
+
+  const stmnt = db.prepare(sql);
+  const rows = stmnt.all({ searchQuery });
+  return rows as { id: string }[];
+}
+
 export function getTrackForArtist(artistId: string): Track[] {
   const sql = `
     select t.name,

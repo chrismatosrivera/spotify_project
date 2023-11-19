@@ -10,33 +10,30 @@
 	let chosenArtist = '';
 	let errorMessage = '';
 
-	let artists: Artist[];
-
-	let items: Artist[] = [];
+	let items: { id: string }[] = [];
 
 	let currentPage = 1
   	let pageSize = 25
  	$: paginatedItems = paginate({ items, pageSize, currentPage })
 
-	function fetchArtists() {
+	function fetchGenres() {
 		
 		if (searchTerm.length < 0) {
 			errorMessage = 'Please enter more than 0 characters';
 			return;
 		}
 
-		fetch(`/artists?searchTerm=${searchTerm}`)
+		fetch(`/genres?searchTerm=${searchTerm}`)
 			.then((res) => res.json())
 			.then((data) => {
-				artists = data;
-				items = artists;
+				items = data;
 			})
 
 		errorMessage = '';
 	}
 
 	onMount(async () => {
-		fetchArtists();
+		fetchGenres();
 	});
 </script>
 
@@ -46,13 +43,13 @@
 	<div class="flex">
 		<input type="text" placeholder="Type an artist name..." class="input input-bordered w-full" bind:value="{searchTerm}">
 	
-		<button class="btn btn-primary mx-2" on:click={fetchArtists}> Show Artists </button>
+		<button class="btn btn-primary mx-2" on:click={fetchGenres}> Show Artists </button>
 	</div>
 
 	{#each paginatedItems as item}
-		<a class="text-xl" href="/artists/artist/{item.id}">
+		<a class="text-xl" href="/genres/genre/{item.id}">
 			<div class="p-3">
-				{item.name}
+				{item.id}
 			</div>
 		</a>
 	{/each}

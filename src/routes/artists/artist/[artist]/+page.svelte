@@ -41,7 +41,7 @@
 	}
 
 	function fetchGenreDistribution() {
-		//fetch(`/genres/genre?genreId=${artist.genre_id}`)
+		//fetch(`/genres/genreDist?genreId=${artist.genre_id}`)
 			//.then((res) => res.json())
 			//.then((data) => {
 				//let distribution = data;
