@@ -81,6 +81,9 @@
 	<!-- data -->
 	{#each points as point}
 		<circle fill={selectedPoint == point ? "#e4dcfa" : "#9980fa"} cx={xScale(point.x)} cy={yScale(point.y)} on:click={() => selectPoint(point)} r="5" />
+		{#if selectedPoint == point}
+			<text x={xScale(point.x) + 10} y={yScale(point.y)}> {point.name} </text>
+		{/if}
 	{/each}
 </svg>
 
