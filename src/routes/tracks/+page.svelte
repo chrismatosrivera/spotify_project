@@ -12,12 +12,14 @@
 	let allTrackAverages: Track[];
 	let allTracks: Track[];
 
+	let audioPlayer: HTMLAudioElement;
+
 	let isLoading: boolean = false; 
 
 	let chosenTempo: number = 100;
 	let tempoName: string = "Tempo"
 
-	let points: {x: number, y: number}[];
+	let points: {x: number, y: number, z: string | null, name: string}[];
 
 	function fetchtrackAveragesample() {
 		isLoading = true;
@@ -41,7 +43,7 @@
 				allTracks = data;	
 				
 				points = allTracks.map(t => {
-					return { x: t.danceability * 100, y: t.energy * 100}
+					return { x: t.danceability * 100, y: t.energy * 100, z: t.preview_url}
 				});
 
 			})
@@ -114,7 +116,12 @@
 {/if}
 
 {#if (points && points.length > 0)}
-	<div class="py-10">
+	<div class="flex justify-center pt-10">
+		<audio controls={true} bind:this={audioPlayer} >
+			<source />
+		</audio>
+	</div>
+	<div class="py-5">
 		<div class="grid grid-cols-7">
 			<div class="col-span-1">
 				
@@ -134,18 +141,18 @@
 				danceability
 			</div>
 			<div class="col-span-2">
-				<ScatterPlotV2 points={allTracks.map(t => {
-					return { x: t.danceability * 100, y: t.danceability * 100}
+				<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
+					return { x: t.danceability * 100, y: t.danceability * 100, z: t.preview_url, name: t.name}
 				})} />
 			</div>
 			<div class="col-span-2">
-				<ScatterPlotV2 points={allTracks.map(t => {
-					return { x: t.energy * 100, y: t.danceability * 100}
+				<ScatterPlotV2 audioPlayer={audioPlayer}  points={allTracks.map(t => {
+					return { x: t.energy * 100, y: t.danceability * 100, z: t.preview_url, name: t.name}
 				})} />
 			</div>
 			<div class="col-span-2">
-				<ScatterPlotV2 points={allTracks.map(t => {
-					return { x: 100 - t.loudness * -1, y: t.danceability * 100}
+				<ScatterPlotV2 audioPlayer={audioPlayer}  points={allTracks.map(t => {
+					return { x: 100 - t.loudness * -1, y: t.danceability * 100, z: t.preview_url, name: t.name}
 				})} />
 			</div>
 		</div>
@@ -155,18 +162,18 @@
 				energy
 			</div>
 			<div class="col-span-2">
-				<ScatterPlotV2 points={allTracks.map(t => {
-					return { x: t.danceability * 100, y: t.energy * 100}
+				<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
+					return { x: t.danceability * 100, y: t.energy * 100, z: t.preview_url, name: t.name}
 				})} />
 			</div>
 			<div class="col-span-2">
-				<ScatterPlotV2 points={allTracks.map(t => {
-					return { x: t.energy * 100, y: t.energy * 100}
+				<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
+					return { x: t.energy * 100, y: t.energy * 100, z: t.preview_url, name: t.name}
 				})} />
 			</div>
 			<div class="col-span-2">
-				<ScatterPlotV2 points={allTracks.map(t => {
-					return { x: 100 - t.loudness * -1, y: t.energy * 100}
+				<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
+					return { x: 100 - t.loudness * -1, y: t.energy * 100, z: t.preview_url, name: t.name}
 				})} />
 			</div>
 		</div>
@@ -176,18 +183,18 @@
 				loudness
 			</div>
 			<div class="col-span-2">
-				<ScatterPlotV2 points={allTracks.map(t => {
-					return { x: t.danceability * 100, y: 100 - t.loudness * -1}
+				<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
+					return { x: t.danceability * 100, y: 100 - t.loudness * -1, z: t.preview_url, name: t.name}
 				})} />
 			</div>
 			<div class="col-span-2">
-				<ScatterPlotV2 points={allTracks.map(t => {
-					return { x: t.energy * 100, y: 100 - t.loudness * -1}
+				<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
+					return { x: t.energy * 100, y: 100 - t.loudness * -1, z: t.preview_url, name: t.name}
 				})} />
 			</div>
 			<div class="col-span-2">
-				<ScatterPlotV2 points={allTracks.map(t => {
-					return { x: 100 - t.loudness * -1, y: 100 - t.loudness * -1}
+				<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
+					return { x: 100 - t.loudness * -1, y: 100 - t.loudness * -1, z: t.preview_url, name: t.name}
 				})} />
 			</div>
 		</div>

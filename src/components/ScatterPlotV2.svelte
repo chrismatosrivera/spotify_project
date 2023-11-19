@@ -2,9 +2,12 @@
 	import { onMount } from 'svelte';
 	import { scaleLinear } from 'd3-scale';
 
-	export let points;
+	export let points: { x: number, y: number, z: string, name: string }[];
+	export let audioPlayer: HTMLAudioElement | null;
 
-	let svg;
+	let selectedPoint: { x: number, y: number, z: string, name: string };
+
+	let svg: SVGElement;
 	let width = 500;
 	let height = 500;
 
@@ -26,6 +29,19 @@
 
 	function resize() {
 		({ width, height } = svg.getBoundingClientRect());
+	}
+
+	function selectPoint(point: { x: number, y: number, z: string, name: string }) {
+		console.log(point.name)
+		selectedPoint = point;
+
+		console.log(point.z)
+
+		audioPlayer.src = point.z;
+
+		if (audioPlayer?.src) {
+			audioPlayer?.play();
+		}
 	}
 </script>
 
@@ -64,7 +80,7 @@
 
 	<!-- data -->
 	{#each points as point}
-		<circle cx={xScale(point.x)} cy={yScale(point.y)} r="5" />
+		<circle fill={selectedPoint == point ? "#e4dcfa" : "#9980fa"} cx={xScale(point.x)} cy={yScale(point.y)} on:click={() => selectPoint(point)} r="5" />
 	{/each}
 </svg>
 
@@ -76,7 +92,7 @@
 	}
 
 	circle {
-		fill: #9980fa;
+
 		fill-opacity: 0.6;
 		stroke: rgba(0, 0, 0, 0.5);
 	}

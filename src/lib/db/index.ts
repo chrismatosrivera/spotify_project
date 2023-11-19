@@ -159,6 +159,7 @@ export function getTrackSample(): Track[] {
     select
           t.name,
           t.popularity,
+          t.preview_url as preview_url,
           af.loudness as loudness,
           af.acousticness as acousticness,
           af.danceability as danceability,
@@ -175,7 +176,7 @@ export function getTrackSample(): Track[] {
     inner join audio_features as af on t.audio_feature_id = af.id
     inner join r_albums_tracks as at on at.track_id = t.id
     inner join albums as al on al.id = at.album_id
-    where t.id and a.popularity > 10 LIMIT 100;
+    where t.id and a.popularity > 10 and preview_url != '' LIMIT 100;
   `;
 
   const stmnt = db.prepare(sql);
