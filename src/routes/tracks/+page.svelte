@@ -19,8 +19,6 @@
 	let chosenTempo: number = 100;
 	let tempoName: string = "Tempo"
 
-	let points: {x: number, y: number, z: string | null, name: string}[];
-
 	function fetchtrackAveragesample() {
 		isLoading = true;
 		fetch(`/tracks/trackAverage`)
@@ -41,11 +39,6 @@
 			.then((res) => res.json())
 			.then((data) => {
 				allTracks = data;	
-				
-				points = allTracks.map(t => {
-					return { x: t.danceability * 100, y: t.energy * 100, z: t.preview_url}
-				});
-
 			})
 	}
 
@@ -115,7 +108,7 @@
 	<Barchart data={attributes} yTicks={yTicks} />
 {/if}
 
-{#if (points && points.length > 0)}
+{#if (allTracks && allTracks.length > 0)}
 	<div class="flex justify-center pt-10">
 		<audio controls={true} bind:this={audioPlayer} >
 			<source />

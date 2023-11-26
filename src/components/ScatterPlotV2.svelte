@@ -37,7 +37,9 @@
 
 		console.log(point.z)
 
-		audioPlayer.src = point.z;
+		if (audioPlayer) {
+			audioPlayer.src = point.z;
+		}
 
 		if (audioPlayer?.src) {
 			audioPlayer?.play();

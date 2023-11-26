@@ -102,17 +102,12 @@ export function getKeyDistributionForArtist(artistId: string) {
 export function getAverageKeyDistributionForGenre(genreId: string) {
   const sql = `
     WITH TrackCounts AS (
-    select af.key AS name,
+    select t.key AS name,
         COUNT(t.id) AS track_count,
-        af.mode AS mode,
-        a.name AS artist_name
-    from tracks AS t
-    inner join r_track_artist AS ta ON t.id = ta.track_id
-    inner join artists AS a ON a.id = ta.artist_id
-    inner join audio_features AS af ON t.audio_feature_id = af.id
-    inner join r_artist_genre AS rag ON a.id = rag.artist_id
-    where rag.genre_id = $genreId
-    group by af.key, af.mode, a.name
+        t.mode AS mode
+    from trackgenres AS t
+    where t.genre_id = $genreId
+    group by t.key, t.mode
     )
 
     select name,
