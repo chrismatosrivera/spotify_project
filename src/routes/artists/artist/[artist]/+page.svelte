@@ -9,6 +9,7 @@
 	import DualBarchart from '../../../../components/DualBarchart.svelte';
 	import Violin from '../../../../components/Violin.svelte';
 	import * as d3 from "d3";
+	import Steam from '../../../../components/Steam.svelte';
 
 	let artist: Artist;
 	let tracks: Track[];
@@ -74,11 +75,25 @@
 
 <div class="px-4">
 
+	{#if artist}
+		<div class="text-sm breadcrumbs">
+		<ul>
+			<li><a href="/tracks">Tracks</a></li> 
+			<li><a href="/genres/genre/{artist.genre_id}">{artist.genre_id}</a></li> 
+			<li>{artist.name}</li>
+		</ul>
+		</div>
+	{/if}
+
 	{#if isLoading}
 		<div class="h-screen flex items-center justify-center">
 			<Wave size="60" color="#9980fa" unit="px" duration="1s" />
 		</div>
 	{:else}
+
+		{#if artist}
+			<h1 class="is-size-1 mb-5 text-3xl text-center">{artist.name}</h1>
+		{/if}
 
 		<h1 class="is-size-1 mb-5 text-center">Key Distribution for Major and Minor tracks</h1>
 		<h1 class="text-center"> Major </h1>

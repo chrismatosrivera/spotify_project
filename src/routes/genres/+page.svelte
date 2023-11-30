@@ -41,9 +41,9 @@
 	<p> {errorMessage} </p>
 
 	<div class="flex">
-		<input type="text" placeholder="Type an artist name..." class="input input-bordered w-full" bind:value="{searchTerm}">
+		<input type="text" placeholder="Type an genre name..." class="input input-bordered w-full" bind:value="{searchTerm}">
 	
-		<button class="btn btn-primary mx-2" on:click={fetchGenres}> Show Artists </button>
+		<button class="btn btn-primary mx-2" on:click={fetchGenres}> Show Genres </button>
 	</div>
 
 	{#each paginatedItems as item}

@@ -114,81 +114,83 @@
 			<source />
 		</audio>
 	</div>
-	<div class="py-5">
-		<div class="grid grid-cols-7">
-			<div class="col-span-1">
-				
+	<div class="flex justify-center">
+		<div class="py-5 w-1/2">
+			<div class="grid grid-cols-7">
+				<div class="col-span-1">
+					
+				</div>
+				<div class="col-span-2 text-center">
+					danceability
+				</div>
+				<div class="col-span-2 text-center">
+					energy
+				</div>
+				<div class="col-span-2 text-center">
+					loudness
+				</div>
 			</div>
-			<div class="col-span-2 text-center">
-				danceability
+			<div class="grid grid-cols-7 h-48">
+				<div class="col-span-1 text-center pt-[50%]">
+					danceability
+				</div>
+				<div class="col-span-2">
+					<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
+						return { x: t.danceability * 100, y: t.danceability * 100, z: t.preview_url, name: t.name}
+					})} />
+				</div>
+				<div class="col-span-2">
+					<ScatterPlotV2 audioPlayer={audioPlayer}  points={allTracks.map(t => {
+						return { x: t.energy * 100, y: t.danceability * 100, z: t.preview_url, name: t.name}
+					})} />
+				</div>
+				<div class="col-span-2">
+					<ScatterPlotV2 audioPlayer={audioPlayer}  points={allTracks.map(t => {
+						return { x: 100 - t.loudness * -1, y: t.danceability * 100, z: t.preview_url, name: t.name}
+					})} />
+				</div>
 			</div>
-			<div class="col-span-2 text-center">
-				energy
-			</div>
-			<div class="col-span-2 text-center">
-				loudness
-			</div>
-		</div>
-		<div class="grid grid-cols-7 h-96">
-			<div class="col-span-1 text-center pt-[50%]">
-				danceability
-			</div>
-			<div class="col-span-2">
-				<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
-					return { x: t.danceability * 100, y: t.danceability * 100, z: t.preview_url, name: t.name}
-				})} />
-			</div>
-			<div class="col-span-2">
-				<ScatterPlotV2 audioPlayer={audioPlayer}  points={allTracks.map(t => {
-					return { x: t.energy * 100, y: t.danceability * 100, z: t.preview_url, name: t.name}
-				})} />
-			</div>
-			<div class="col-span-2">
-				<ScatterPlotV2 audioPlayer={audioPlayer}  points={allTracks.map(t => {
-					return { x: 100 - t.loudness * -1, y: t.danceability * 100, z: t.preview_url, name: t.name}
-				})} />
-			</div>
-		</div>
 
-		<div class="grid grid-cols-7 h-96">
-			<div class="col-span-1 text-center pt-[50%]">
-				energy
+			<div class="grid grid-cols-7 h-48">
+				<div class="col-span-1 text-center pt-[50%]">
+					energy
+				</div>
+				<div class="col-span-2">
+					<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
+						return { x: t.danceability * 100, y: t.energy * 100, z: t.preview_url, name: t.name}
+					})} />
+				</div>
+				<div class="col-span-2">
+					<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
+						return { x: t.energy * 100, y: t.energy * 100, z: t.preview_url, name: t.name}
+					})} />
+				</div>
+				<div class="col-span-2">
+					<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
+						return { x: 100 - t.loudness * -1, y: t.energy * 100, z: t.preview_url, name: t.name}
+					})} />
+				</div>
 			</div>
-			<div class="col-span-2">
-				<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
-					return { x: t.danceability * 100, y: t.energy * 100, z: t.preview_url, name: t.name}
-				})} />
-			</div>
-			<div class="col-span-2">
-				<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
-					return { x: t.energy * 100, y: t.energy * 100, z: t.preview_url, name: t.name}
-				})} />
-			</div>
-			<div class="col-span-2">
-				<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
-					return { x: 100 - t.loudness * -1, y: t.energy * 100, z: t.preview_url, name: t.name}
-				})} />
-			</div>
-		</div>
 
-		<div class="grid grid-cols-7 h-96">
-			<div class="col-span-1 text-center pt-[50%]">
-				loudness
-			</div>
-			<div class="col-span-2">
-				<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
-					return { x: t.danceability * 100, y: 100 - t.loudness * -1, z: t.preview_url, name: t.name}
-				})} />
-			</div>
-			<div class="col-span-2">
-				<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
-					return { x: t.energy * 100, y: 100 - t.loudness * -1, z: t.preview_url, name: t.name}
-				})} />
-			</div>
-			<div class="col-span-2">
-				<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
-					return { x: 100 - t.loudness * -1, y: 100 - t.loudness * -1, z: t.preview_url, name: t.name}
-				})} />
+			<div class="grid grid-cols-7 h-48">
+				<div class="col-span-1 text-center pt-[50%]">
+					loudness
+				</div>
+				<div class="col-span-2">
+					<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
+						return { x: t.danceability * 100, y: 100 - t.loudness * -1, z: t.preview_url, name: t.name}
+					})} />
+				</div>
+				<div class="col-span-2">
+					<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
+						return { x: t.energy * 100, y: 100 - t.loudness * -1, z: t.preview_url, name: t.name}
+					})} />
+				</div>
+				<div class="col-span-2">
+					<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
+						return { x: 100 - t.loudness * -1, y: 100 - t.loudness * -1, z: t.preview_url, name: t.name}
+					})} />
+				</div>
 			</div>
 		</div>
 	</div>
