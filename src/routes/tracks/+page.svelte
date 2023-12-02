@@ -6,15 +6,21 @@
 	import ScatterPlotV2 from '../../components/ScatterPlotV2.svelte';
 	import * as d3 from "d3";
 	import Barchart from '../../components/Barchart.svelte';
+	import Histogram from '../../components/Histogram.svelte';
 	import { Wave } from 'svelte-loading-spinners';
 
 	let trackAverages: Track[];
 	let allTrackAverages: Track[];
 	let allTracks: Track[];
+	let filterTracks: Track[];
 
 	let audioPlayer: HTMLAudioElement;
 
 	let isLoading: boolean = false; 
+	
+	const energyAccessor = (d: { energy: any; }) => d.energy;
+	const danceabilityAccessor = (d: { danceability: any; }) => d.danceability;
+	const valenceAccessor = (d: { valence: any; }) => d.valence;
 
 	let chosenTempo: number = 100;
 	let tempoName: string = "Tempo"
@@ -33,12 +39,15 @@
 					{name: 'valence', value: trackAverages[0].valence},
 				];
 				isLoading = false;
+				
+				
 			})
 
 		fetch(`/tracks`)
 			.then((res) => res.json())
 			.then((data) => {
 				allTracks = data;	
+				filterTracks = allTracks.filter(t => Math.floor(t.tempo) > Math.floor(chosenTempo) && Math.floor(t.tempo) < Math.floor(chosenTempo + 20));
 			})
 	}
 
@@ -49,6 +58,8 @@
 			{name: 'danceability', value: trackAverages[0].danceability},
 			{name: 'valence', value: trackAverages[0].valence},
 		];
+		
+		filterTracks = allTracks.filter(t => Math.floor(t.tempo) > Math.floor(chosenTempo) && Math.floor(t.tempo) < Math.floor(chosenTempo + 20));
 		
 		if (chosenTempo > 199){
 		 tempoName = "Prestissimo (200+bpm)";
@@ -98,6 +109,7 @@
 	</div>
 {:else}
 	<div class="mx-48">
+		<div class="text-lg text-center py-3"> Average Energy, Danceability and Valence per chosen tempo</div>
 		<input type="range" min="40" max="200" class="range" step="20" bind:value={chosenTempo} on:change={onTempoChange} /> 
 		{tempoName}
 	</div>
@@ -108,8 +120,39 @@
 	<Barchart data={attributes} yTicks={yTicks} />
 {/if}
 
+
 {#if (allTracks && allTracks.length > 0)}
-	<div class="flex justify-center pt-10">
+
+	<div class="text-lg text-center py-3 pt-10"> Energy, Danceability and Valence Distributions </div>
+	<div class="flex justify-center">
+		<div class="grid grid-cols-7 h-48">
+			<div class="col-span-7 lg:col-span-2">
+				<Histogram
+				data={filterTracks}
+				xAccessor={energyAccessor}
+				label="Energy"
+				/>
+			</div>
+			
+			<div class="col-span-7 lg:col-span-2">
+				<Histogram
+				data={filterTracks}
+				xAccessor={danceabilityAccessor}
+				label="Danceability"
+				/>
+			</div>
+		
+			<div class="col-span-7 lg:col-span-2">
+				<Histogram
+				data={filterTracks}
+				xAccessor={valenceAccessor}
+				label="Valence"
+				/>
+			</div>
+		</div>
+	</div>
+
+	<div class="flex justify-center pt-80">
 		<audio controls={true} bind:this={audioPlayer} >
 			<source />
 		</audio>

@@ -9,7 +9,6 @@
 	import DualBarchart from '../../../../components/DualBarchart.svelte';
 	import Violin from '../../../../components/Violin.svelte';
 	import * as d3 from "d3";
-	import Steam from '../../../../components/Steam.svelte';
 
 	let artist: Artist;
 	let tracks: Track[];

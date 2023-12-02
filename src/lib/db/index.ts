@@ -33,6 +33,30 @@ export function getGenreList(searchQuery: string): { id: string }[] {
   return rows as { id: string }[];
 }
 
+export function getTrackForGenre(genre_id: string): Track[] {
+  const sql = `
+    select popularity,
+          acousticness,
+          danceability,
+          energy,
+          instrumentalness,
+          key,
+          liveness,
+          loudness,
+          mode,
+          valence,
+          tempo,
+          speechiness,
+          time_signature
+    from trackgenres
+    where genre_id = $genre_id;
+  `
+
+  const stmnt = db.prepare(sql);
+  const rows = stmnt.all({ genre_id });
+  return rows as Track[];
+}
+
 export function getTrackForArtist(artistId: string): Track[] {
   const sql = `
     select t.name,

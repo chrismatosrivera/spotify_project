@@ -25,14 +25,13 @@
 	let maxMinor = 0;
 
 	function fetchGenreDistribution() {
-        isLoading = true;
 		fetch(`/genres/genre/genreDist?genreId=${id}`)
 			.then((res) => res.json())
 			.then((data) => {
+				isLoading = true;
 				let distribution = data;
 				majorKeyDistributionGenre = distribution.filter((t: AudioFeature) => t.mode == 1);
 				minorKeyDistributionGenre = distribution.filter((t: AudioFeature) => t.mode == 0);
-				isLoading = false;
 				
 				maxMajor = Math.max(...majorKeyDistributionGenre.map((b) => b.value));
 				maxMinor = Math.max(...minorKeyDistributionGenre.map((b) => b.value));
@@ -46,8 +45,18 @@
 
 	}
 
+	function fetchTracks() {
+		fetch(`/genres/genre?genreId=${id}`)
+			.then((res) => res.json())
+			.then((data) => {
+				tracks = data;
+				isLoading = false;
+			});
+	}
+
 	onMount(() => {
 		fetchGenreDistribution();
+		fetchTracks();
 	});
 </script>
 
@@ -77,9 +86,25 @@
 	{/if}
 
 
-	<div class="p-4 flex justify-center">
-		{#if tracks != undefined}
-			<Violin data={tracks.map(t => t.energy * 100)} />
-		{/if}
-	</div>
+	{#if tracks != undefined}
+		<div class="py-4">
+			<div class="p-4 pt-10 flex justify-center">
+				<Violin data={tracks.map(t => Math.floor(t.energy * 100))} />
+			</div>
+
+			<div class="p-4 py-10 flex justify-center">
+				<h2> Energy Distribution </h2>
+			</div>
+		</div>
+		
+		<div class="py-4">
+			<div class="p-4 pt-10 flex justify-center">
+				<Violin data={tracks.map(t => Math.floor(t.danceability * 100))} />
+			</div>
+
+			<div class="p-4 py-10 flex justify-center">
+				<h2> Danceability Distribution </h2>
+			</div>
+		</div>
+	{/if}
 </div>
