@@ -8,6 +8,7 @@
 	import Barchart from '../../components/Barchart.svelte';
 	import Histogram from '../../components/Histogram.svelte';
 	import { Wave } from 'svelte-loading-spinners';
+	import { fly, scale } from 'svelte/transition';
 
 	let trackAverages: Track[];
 	let allTrackAverages: Track[];
@@ -48,7 +49,51 @@
 			.then((data) => {
 				allTracks = data;	
 				filterTracks = allTracks.filter(t => Math.floor(t.tempo) > Math.floor(chosenTempo) && Math.floor(t.tempo) < Math.floor(chosenTempo + 20));
+
+				danceDance = allTracks.map(t => {
+					return { x: t.danceability * 100, y: t.danceability * 100, z: t.preview_url, name: t.name}
+				})
+
+				danceEnergy = allTracks.map(t => {
+					return { x: t.energy * 100, y: t.danceability * 100, z: t.preview_url, name: t.name}
+				})
+				
+				danceLoud = allTracks.map(t => {
+					return { x: 100 - t.loudness * -1, y: t.danceability * 100, z: t.preview_url, name: t.name}
+				})
+
+				energyDance = allTracks.map(t => {
+					return { x: t.danceability * 100, y: t.energy * 100, z: t.preview_url, name: t.name}
+				})
+				
+				energyEnergy = allTracks.map(t => {
+					return { x: t.energy * 100, y: t.energy * 100, z: t.preview_url, name: t.name}
+				})
+
+				energyLoud = allTracks.map(t => {
+					return { x: 100 - t.loudness * -1, y: t.energy * 100, z: t.preview_url, name: t.name}
+				})
+
+				loudDance = allTracks.map(t => {
+					return { x: t.danceability * 100, y: 100 - t.loudness * -1, z: t.preview_url, name: t.name}
+				});
+
+				loudEnergy = allTracks.map(t => {
+					return { x: t.energy * 100, y: 100 - t.loudness * -1, z: t.preview_url, name: t.name}
+				});
+
+				loudLoud = allTracks.map(t => {
+					return { x: 100 - t.loudness * -1, y: 100 - t.loudness * -1, z: t.preview_url, name: t.name}
+				})
 			})
+	}
+
+	function selectScatterPlot(data: {x: number; y: number; z: string; name: string}[]) {
+		selectedScatterPlotData = data;
+	}
+
+	function clearScatterPlotSelection() {
+		selectedScatterPlotData = null;
 	}
 
 	function onTempoChange() {
@@ -91,6 +136,18 @@
 
 	const yTicks = [0, 25, 50, 75, 100];
 
+	let selectedScatterPlotData: {x: number; y: number; z: string; name: string}[] | null = null;
+
+	let danceDance: {x: number; y: number; z: string; name: string}[];
+	let danceEnergy: {x: number; y: number; z: string; name: string}[];
+	let danceLoud: {x: number; y: number; z: string; name: string}[];
+	let energyEnergy: {x: number; y: number; z: string; name: string}[];
+	let energyDance: {x: number; y: number; z: string; name: string}[];
+	let energyLoud: {x: number; y: number; z: string; name: string}[];
+	let loudDance: {x: number; y: number; z: string; name: string}[];
+	let loudEnergy: {x: number; y: number; z: string; name: string}[];
+	let loudLoud: {x: number; y: number; z: string; name: string}[];
+
 </script>
 
 <style>
@@ -122,11 +179,9 @@
 
 
 {#if (allTracks && allTracks.length > 0)}
-
 	<div class="text-lg text-center py-3 pt-10"> Energy, Danceability and Valence Distributions </div>
-	<div class="flex justify-center">
 		<div class="grid grid-cols-7 h-48">
-			<div class="col-span-7 lg:col-span-2">
+			<div class="col-span-2">
 				<Histogram
 				data={filterTracks}
 				xAccessor={energyAccessor}
@@ -134,7 +189,7 @@
 				/>
 			</div>
 			
-			<div class="col-span-7 lg:col-span-2">
+			<div class="col-span-2">
 				<Histogram
 				data={filterTracks}
 				xAccessor={danceabilityAccessor}
@@ -142,7 +197,7 @@
 				/>
 			</div>
 		
-			<div class="col-span-7 lg:col-span-2">
+			<div class="col-span-2">
 				<Histogram
 				data={filterTracks}
 				xAccessor={valenceAccessor}
@@ -150,14 +205,10 @@
 				/>
 			</div>
 		</div>
-	</div>
 
-	<div class="flex justify-center pt-80">
-		<audio controls={true} bind:this={audioPlayer} >
-			<source />
-		</audio>
-	</div>
-	<div class="flex justify-center">
+	<div class="text-lg text-center py-3 pt-80"> Relationship Matrix of Spotify Attributes <div class="tooltip" data-tip="You may click on a scatterplot to expand it">i</div> </div>
+	{#if (!selectedScatterPlotData)}
+	<div class="flex justify-center" transition:fly={{ duration: 500 }}>
 		<div class="py-5 w-1/2">
 			<div class="grid grid-cols-7">
 				<div class="col-span-1">
@@ -177,20 +228,14 @@
 				<div class="col-span-1 text-center pt-[50%]">
 					danceability
 				</div>
-				<div class="col-span-2">
-					<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
-						return { x: t.danceability * 100, y: t.danceability * 100, z: t.preview_url, name: t.name}
-					})} />
+				<div class="col-span-2 cursor-pointer" on:click={() => selectScatterPlot(danceDance)}>
+					<ScatterPlotV2 points={danceDance} />
 				</div>
-				<div class="col-span-2">
-					<ScatterPlotV2 audioPlayer={audioPlayer}  points={allTracks.map(t => {
-						return { x: t.energy * 100, y: t.danceability * 100, z: t.preview_url, name: t.name}
-					})} />
+				<div class="col-span-2 cursor-pointer" on:click={() => selectScatterPlot(danceEnergy)}>
+					<ScatterPlotV2  points={danceEnergy} />
 				</div>
-				<div class="col-span-2">
-					<ScatterPlotV2 audioPlayer={audioPlayer}  points={allTracks.map(t => {
-						return { x: 100 - t.loudness * -1, y: t.danceability * 100, z: t.preview_url, name: t.name}
-					})} />
+				<div class="col-span-2 cursor-pointer" on:click={() => selectScatterPlot(danceLoud)}>
+					<ScatterPlotV2 points={danceLoud} />
 				</div>
 			</div>
 
@@ -198,20 +243,14 @@
 				<div class="col-span-1 text-center pt-[50%]">
 					energy
 				</div>
-				<div class="col-span-2">
-					<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
-						return { x: t.danceability * 100, y: t.energy * 100, z: t.preview_url, name: t.name}
-					})} />
+				<div class="col-span-2 cursor-pointer" on:click={() => selectScatterPlot(energyDance)}>
+					<ScatterPlotV2 points={energyDance} />
 				</div>
-				<div class="col-span-2">
-					<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
-						return { x: t.energy * 100, y: t.energy * 100, z: t.preview_url, name: t.name}
-					})} />
+				<div class="col-span-2 cursor-pointer" on:click={() => selectScatterPlot(energyEnergy)}>
+					<ScatterPlotV2 points={energyEnergy} />
 				</div>
-				<div class="col-span-2">
-					<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
-						return { x: 100 - t.loudness * -1, y: t.energy * 100, z: t.preview_url, name: t.name}
-					})} />
+				<div class="col-span-2 cursor-pointer" on:click={() => selectScatterPlot(energyLoud)}>
+					<ScatterPlotV2 points={energyLoud} />
 				</div>
 			</div>
 
@@ -219,24 +258,29 @@
 				<div class="col-span-1 text-center pt-[50%]">
 					loudness
 				</div>
-				<div class="col-span-2">
-					<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
-						return { x: t.danceability * 100, y: 100 - t.loudness * -1, z: t.preview_url, name: t.name}
-					})} />
+				<div class="col-span-2 cursor-pointer" on:click={() => selectScatterPlot(loudDance)}>
+					<ScatterPlotV2 points={loudDance} />
 				</div>
-				<div class="col-span-2">
-					<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
-						return { x: t.energy * 100, y: 100 - t.loudness * -1, z: t.preview_url, name: t.name}
-					})} />
+				<div class="col-span-2 cursor-pointer" on:click={() => selectScatterPlot(loudEnergy)}>
+					<ScatterPlotV2 points={loudEnergy} />
 				</div>
-				<div class="col-span-2">
-					<ScatterPlotV2 audioPlayer={audioPlayer} points={allTracks.map(t => {
-						return { x: 100 - t.loudness * -1, y: 100 - t.loudness * -1, z: t.preview_url, name: t.name}
-					})} />
+				<div class="col-span-2 cursor-pointer" on:click={() => selectScatterPlot(loudLoud)}>
+					<ScatterPlotV2 points={loudLoud} />
 				</div>
 			</div>
 		</div>
 	</div>
+
+	{:else}
+		{#if (selectedScatterPlotData)}
+			<div class="px-96 h-96" transition:fly={{ duration: 500 }}>
+				<button class="link" on:click={() => { selectedScatterPlotData = null }}>
+					Back
+				</button>
+				<ScatterPlotV2 points={selectedScatterPlotData} includeAudioPlayer={true} width={500} height={1000} />
+			</div>
+		{/if}
+	{/if}
 {/if}
 
 

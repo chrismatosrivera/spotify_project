@@ -105,4 +105,5 @@
     min-width: 500px;
     overflow: hidden;
   }
+
 </style>

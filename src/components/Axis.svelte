@@ -80,4 +80,11 @@
     dominant-baseline: middle;
     text-anchor: end;
   }
+
+  text {
+            fill: black;
+        }
+        @media (prefers-color-scheme: dark) {
+            text{ fill: #e5e7eb; }
+        }
 </style>
