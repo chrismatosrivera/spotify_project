@@ -7,7 +7,7 @@
 
     export let data: number[];
 
-    export let width: number = 600;
+    export let width: number = 500;
     export let height: number = 400;
     export let binNumber: number = 10;
 
@@ -53,7 +53,7 @@ onMount(() => {
         fill="#9a6fb0"
         fill-opacity={0.1}
         stroke-width={2}
-		transform="translate(100,0)"
+		transform="translate(75,0)"
         />
 		
 	

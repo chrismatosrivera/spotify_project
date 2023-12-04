@@ -85,6 +85,6 @@
             fill: black;
         }
         @media (prefers-color-scheme: dark) {
-            text{ fill: #e5e7eb; }
+            text{ fill: #a6adba; }
         }
 </style>

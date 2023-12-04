@@ -180,7 +180,7 @@
 
 {#if (allTracks && allTracks.length > 0)}
 	<div class="text-lg text-center py-3 pt-10"> Energy, Danceability and Valence Distributions </div>
-		<div class="grid grid-cols-7 h-48">
+		<div class="grid grid-cols-6 h-48 place-items-center">
 			<div class="col-span-2">
 				<Histogram
 				data={filterTracks}

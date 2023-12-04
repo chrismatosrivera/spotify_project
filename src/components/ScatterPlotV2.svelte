@@ -65,7 +65,7 @@
 		<text
 		class="Axis__label"
 		style="transform: translate({(
-			[-56, height / 2]
+			[0, height / 2]
 		).map(d => d + "px").join(", ")}) {
 			"rotate(-90deg)"
 		}">
