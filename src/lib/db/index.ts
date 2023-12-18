@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3';
 import type { Track, Artist, AudioFeature } from './types';
 
-const db = new Database('./data/spotify2.sqlite', { verbose: console.log });
+const db = new Database('./data/spotify.sqlite', { verbose: console.log });
 
 export function getArtistList(searchQuery : string): Artist[] {
 
