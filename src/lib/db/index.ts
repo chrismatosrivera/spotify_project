@@ -35,7 +35,7 @@ export function getGenreList(searchQuery: string): { id: string }[] {
 
 export function getTrackForGenre(genre_id: string): Track[] {
   const sql = `
-    select popularity,
+    select t.popularity,
           acousticness,
           danceability,
           energy,
@@ -48,8 +48,12 @@ export function getTrackForGenre(genre_id: string): Track[] {
           tempo,
           speechiness,
           time_signature
-    from trackgenres
-    where genre_id = $genre_id;
+    from tracks t
+    inner join r_track_artist as ta on t.id = ta.track_id
+    inner join artists as a on a.id = ta.artist_id
+    inner join audio_features as af on t.audio_feature_id = af.id
+    inner join r_artist_genre ag on a.id = ag.artist_id
+    where ag.genre_id = $genre_id;
   `
 
   const stmnt = db.prepare(sql);
@@ -126,12 +130,16 @@ export function getKeyDistributionForArtist(artistId: string) {
 export function getAverageKeyDistributionForGenre(genreId: string) {
   const sql = `
     WITH TrackCounts AS (
-    select t.key AS name,
+    select af.key AS name,
         COUNT(t.id) AS track_count,
-        t.mode AS mode
-    from trackgenres AS t
-    where t.genre_id = $genreId
-    group by t.key, t.mode
+        af.mode AS mode
+    from tracks AS t
+    inner join r_track_artist as ta on t.id = ta.track_id
+    inner join artists as a on a.id = ta.artist_id
+    inner join audio_features as af on t.audio_feature_id = af.id
+    inner join r_artist_genre ag on a.id = ag.artist_id
+    where ag.genre_id = $genreId
+    group by af.key, af.mode
     )
 
     select name,
