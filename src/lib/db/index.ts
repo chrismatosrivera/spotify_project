@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3';
 import type { Track, Artist, AudioFeature } from './types';
 
-const db = new Database('./data/spotify.sqlite', { verbose: console.log });
+const db = new Database('./data/spotify2.sqlite', { verbose: console.log });
 
 export function getArtistList(searchQuery : string): Artist[] {
 
@@ -162,8 +162,6 @@ export function getTrackAverageSample(): Track[] {
     inner join r_track_artist as ta on t.id = ta.track_id
     inner join artists as a on a.id = ta.artist_id
     inner join audio_features as af on t.audio_feature_id = af.id
-    inner join r_albums_tracks as at on at.track_id = t.id
-    inner join albums as al on al.id = at.album_id
     where t.id in (select id from tracks where popularity > 10 ORDER BY RANDOM() LIMIT 1000) and a.popularity > 10
     group by af.tempo;
   `;
@@ -193,8 +191,6 @@ export function getTrackSample(): Track[] {
     inner join r_track_artist as ta on t.id = ta.track_id
     inner join artists as a on a.id = ta.artist_id
     inner join audio_features as af on t.audio_feature_id = af.id
-    inner join r_albums_tracks as at on at.track_id = t.id
-    inner join albums as al on al.id = at.album_id
     where t.id and a.popularity > 10 and preview_url != '' LIMIT 100;
   `;
 
